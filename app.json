@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "Momentum Crew",
+    "slug": "momentum-crew",
+    "version": "1.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "bundleIdentifier": "com.momentumlandscapingut.crew",
+      "buildNumber": "5",
+      "supportsTablet": false,
+      "infoPlist": {
+        "UIBackgroundModes": ["location", "fetch", "remote-notification"],
+        "NSLocationWhenInUseUsageDescription": "Momentum uses your location to confirm you arrived at each property.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Momentum records which properties you serviced, in the background, so nobody has to check in by hand.",
+        "NSLocationAlwaysUsageDescription": "Momentum records which properties you serviced, in the background, so nobody has to check in by hand.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "associatedDomains": ["applinks:crm.momentumlandscapingut.com"]
+    },
+    "plugins": [
+      ["expo-location", {
+        "locationAlwaysAndWhenInUsePermission": "Momentum records which properties you serviced, in the background.",
+        "isIosBackgroundLocationEnabled": true
+      }],
+      "expo-notifications"
+    ]
+  }
+}
