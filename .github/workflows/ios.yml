@@ -86,6 +86,9 @@ jobs:
 
       - name: Export .ipa
         run: |
+          BUNDLE_ID=$(plutil -extract CFBundleIdentifier raw -o - \
+            "$RUNNER_TEMP/app.xcarchive/Products/Applications/"*.app/Info.plist)
+          echo "exporting $BUNDLE_ID with profile $PROFILE_UUID"
           cat > /tmp/export.plist <<EOF
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -94,6 +97,10 @@ jobs:
             <key>teamID</key><string>${{ secrets.APPLE_TEAM_ID }}</string>
             <key>signingStyle</key><string>manual</string>
             <key>uploadSymbols</key><true/>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>$BUNDLE_ID</key><string>$PROFILE_UUID</string>
+            </dict>
           </dict></plist>
           EOF
           xcodebuild -exportArchive \
