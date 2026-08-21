@@ -7,7 +7,7 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "bundleIdentifier": "com.momentumlandscapingut.crew",
-      "buildNumber": "5",
+      "buildNumber": "6",
       "supportsTablet": false,
       "infoPlist": {
         "UIBackgroundModes": [
@@ -30,6 +30,12 @@
         }
       ],
       "expo-notifications"
-    ]
+    ],
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0D1620"
+    }
   }
 }
