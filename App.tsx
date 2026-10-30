@@ -90,7 +90,10 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <StatusBar style="light" />
-      <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
+      {/* No safe-area insets here: the WebView runs edge-to-edge and the CRM
+          pads its own header and tab bar with env(safe-area-inset-*), so the
+          page's own black reaches the notch and the home indicator. */}
+      <SafeAreaView style={styles.safe} edges={[]}>
         <WebView
           source={{ uri: CRM }}
           injectedJavaScript={BRIDGE}
@@ -105,12 +108,14 @@ export default function App() {
           allowsBackForwardNavigationGestures
           pullToRefreshEnabled
           originWhitelist={["https://*.momentumlandscapingut.com"]}
+          contentInsetAdjustmentBehavior="never"
+          automaticallyAdjustContentInsets={false}
           style={styles.web}
           onContentProcessDidTerminate={() => setLoading(true)}
         />
         {loading && (
           <View style={styles.loading}>
-            <ActivityIndicator size="large" color="#7FB8BE" />
+            <ActivityIndicator size="large" color="#7ac1c9" />
           </View>
         )}
       </SafeAreaView>
@@ -119,12 +124,12 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#0B1219" },
-  web: { flex: 1, backgroundColor: "#0B1219" },
+  safe: { flex: 1, backgroundColor: "#0a0a0a" },
+  web: { flex: 1, backgroundColor: "#0a0a0a" },
   loading: {
     ...StyleSheet.absoluteFillObject,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#0B1219",
+    backgroundColor: "#0a0a0a",
   },
 });
