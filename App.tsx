@@ -25,17 +25,50 @@ const CRM = "https://crm.momentumlandscapingut.com";
 // load and again every few seconds, because a sign-in can happen at any point.
 const BRIDGE = `
 (function () {
+  function parseSession(raw) {
+    if (!raw) return null;
+    try {
+      if (raw.slice(0, 7) === 'base64-') {
+        var b = raw.slice(7).replace(/-/g, '+').replace(/_/g, '/');
+        while (b.length % 4) b += '=';
+        raw = atob(b);
+      }
+      var v = JSON.parse(raw);
+      var t = v && (v.access_token || (v[0] && v[0].access_token) || (Array.isArray(v) && v[0]));
+      if (typeof t === 'string' && t.length > 20) return t;
+    } catch (e) {}
+    return null;
+  }
   function findSession() {
+    // The CRM signs in with @supabase/ssr, which keeps the session in a
+    // cookie named sb-<ref>-auth-token (chunked as .0, .1, ... when long),
+    // not in localStorage. Check the cookie first, localStorage as a fallback.
+    try {
+      var jar = {};
+      document.cookie.split(';').forEach(function (c) {
+        var i = c.indexOf('=');
+        if (i < 0) return;
+        var k = c.slice(0, i).trim(), val = c.slice(i + 1).trim();
+        if (k.indexOf('-auth-token') !== -1) jar[k] = decodeURIComponent(val);
+      });
+      var bases = {};
+      Object.keys(jar).forEach(function (k) {
+        var m = k.match(/^(.*-auth-token)(?:\\.(\\d+))?$/);
+        if (!m) return;
+        bases[m[1]] = bases[m[1]] || [];
+        bases[m[1]][m[2] ? Number(m[2]) : 0] = jar[k];
+      });
+      for (var base in bases) {
+        var t = parseSession(bases[base].join(''));
+        if (t) return t;
+      }
+    } catch (e) {}
     try {
       for (var i = 0; i < localStorage.length; i++) {
         var k = localStorage.key(i);
         if (!k || k.indexOf('-auth-token') === -1) continue;
-        var raw = localStorage.getItem(k);
-        if (!raw) continue;
-        if (raw.slice(0, 7) === 'base64-') raw = atob(raw.slice(7));
-        var v = JSON.parse(raw);
-        var t = v && (v.access_token || (v[0] && v[0].access_token) || (Array.isArray(v) && v[0]));
-        if (typeof t === 'string' && t.length > 20) return t;
+        var t2 = parseSession(localStorage.getItem(k));
+        if (t2) return t2;
       }
     } catch (e) {}
     return null;
